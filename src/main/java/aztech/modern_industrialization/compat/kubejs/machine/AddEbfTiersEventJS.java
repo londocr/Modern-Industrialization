@@ -21,27 +21,21 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package aztech.modern_industrialization.textures.coloramp;
+package aztech.modern_industrialization.compat.kubejs.machine;
 
-import aztech.modern_industrialization.textures.TextureHelper;
+import aztech.modern_industrialization.machines.blockentities.multiblocks.ElectricBlastFurnaceBlockEntity;
+import dev.latvian.mods.kubejs.event.EventJS;
+import java.util.function.Consumer;
+import net.minecraft.resources.ResourceLocation;
 
-public class ColorampHue implements Coloramp {
+public class AddEbfTiersEventJS extends EventJS {
+    private final Consumer<ElectricBlastFurnaceBlockEntity.Tier> tierConsumer;
 
-    private final Coloramp coloramp;
-    private final float hue;
-
-    public ColorampHue(float hue, Coloramp coloramp) {
-        this.coloramp = coloramp;
-        this.hue = hue;
+    public AddEbfTiersEventJS(Consumer<ElectricBlastFurnaceBlockEntity.Tier> tierConsumer) {
+        this.tierConsumer = tierConsumer;
     }
 
-    @Override
-    public int getRGB(double luminance) {
-        return TextureHelper.setHue(coloramp.getRGB(luminance), hue);
-    }
-
-    @Override
-    public int getMeanRGB() {
-        return TextureHelper.setHue(coloramp.getMeanRGB(), hue);
+    public void add(ResourceLocation coilBlockId, long maxBaseEu, String englishName) {
+        tierConsumer.accept(new ElectricBlastFurnaceBlockEntity.Tier(coilBlockId, maxBaseEu, englishName));
     }
 }

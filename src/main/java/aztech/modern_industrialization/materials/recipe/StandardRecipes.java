@@ -131,6 +131,8 @@ public final class StandardRecipes {
         new MIRecipeBuilder(ctx, MIMachineRecipeTypes.PACKER, "fuel_rod_quad").addItemInput("#c:nuclear_alloy_plates", 2)
                 .addPartInput(FUEL_ROD_DOUBLE, 2)
                 .addPartOutput(FUEL_ROD_QUAD, 1);
+        // UNPACKER
+        new MIRecipeBuilder(ctx, MIMachineRecipeTypes.UNPACKER, "coil").addTaggedPartInput(COIL, 1).addPartOutput(CABLE, 8);
 
         // WIREMILL
         new MIRecipeBuilder(ctx, MIMachineRecipeTypes.WIREMILL, "wire").addTaggedPartInput(PLATE, 1).addPartOutput(WIRE, 2);
@@ -191,10 +193,15 @@ public final class StandardRecipes {
      * Add 3x3 -> 1 and 1 -> 9 crafting recipes.
      */
     private static void add3By3Crafting(MaterialBuilder.RecipeContext ctx, PartKeyProvider smallPart, PartKeyProvider bigPart, boolean packer) {
-        new ShapedRecipeBuilder(ctx, bigPart, 1, bigPart.key() + "_from_" + smallPart.key(), "yxx", "xxx", "xxx").addPart('y', smallPart)
-                .addTaggedPart('x',
-                        smallPart);
-        new ShapedRecipeBuilder(ctx, smallPart, 9, smallPart.key() + "_from_" + bigPart.key(), "x").addPart('x', bigPart);
+        if (ctx.hasInternalPart(smallPart) || ctx.hasInternalPart(bigPart)) {
+            // Don't add recipe if it's all external (vanilla already has it)
+            new ShapedRecipeBuilder(ctx, bigPart, 1, bigPart.key() + "_from_" + smallPart.key(), "yxx", "xxx", "xxx")
+                    .addPart('y', smallPart)
+                    .addTaggedPart('x', smallPart);
+            new ShapedRecipeBuilder(ctx, smallPart, 9, smallPart.key() + "_from_" + bigPart.key(), "x")
+                    .addPart('x', bigPart);
+        }
+
         if (packer) {
             new MIRecipeBuilder(ctx, MIMachineRecipeTypes.PACKER, bigPart).addTaggedPartInput(smallPart, 9).addPartOutput(bigPart, 1);
         }

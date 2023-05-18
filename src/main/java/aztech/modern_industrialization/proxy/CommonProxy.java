@@ -73,6 +73,10 @@ public class CommonProxy {
         ServerLifecycleEvents.SERVER_STOPPED.register(s -> currentServer = null);
     }
 
+    public static MinecraftServer getCurrentServer() {
+        return currentServer;
+    }
+
     /**
      * Try to find a suitable user.
      */
@@ -108,7 +112,7 @@ public class CommonProxy {
     }
 
     public void registerPartTankClient(Block tankBlock, Item tankItem, String materialName, String itemPath,
-            BlockEntityType<AbstractTankBlockEntity> blockEntityType) {
+            BlockEntityType<AbstractTankBlockEntity> blockEntityType, int meanRgb) {
     }
 
     public void registerPartBarrelClient(Block barrelBlock, Item barrelItem, String materialName, String itemPath,

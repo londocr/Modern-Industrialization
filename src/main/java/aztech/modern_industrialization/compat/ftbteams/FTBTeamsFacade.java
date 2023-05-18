@@ -21,39 +21,27 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package aztech.modern_industrialization.materials.property;
+package aztech.modern_industrialization.compat.ftbteams;
 
-/**
- * Defines how the coloramp for a material should behave
- */
-public sealed interface ColorampParameters {
-    record Unspecified() implements ColorampParameters {
-        @Override
-        public int getMeanRGB() {
-            return 0;
+import java.util.List;
+import java.util.UUID;
+import net.fabricmc.loader.api.FabricLoader;
+
+public interface FTBTeamsFacade {
+    FTBTeamsFacade INSTANCE = getInstance();
+
+    private static FTBTeamsFacade getInstance() {
+        if (FabricLoader.getInstance().isModLoaded("ftbteams")) {
+            try {
+                return Class.forName("aztech.modern_industrialization.compat.ftbteams.FTBTeamsFacadeImpl")
+                        .asSubclass(FTBTeamsFacade.class).getConstructor().newInstance();
+            } catch (Throwable throwable) {
+                throw new RuntimeException(throwable);
+            }
         }
+
+        return uuid -> List.of();
     }
 
-    record Uniform(int rgb) implements ColorampParameters {
-        @Override
-        public int getMeanRGB() {
-            return rgb;
-        }
-    }
-
-    record Bakable(int meanRGB, String from, String target) implements ColorampParameters {
-        @Override
-        public int getMeanRGB() {
-            return meanRGB;
-        }
-    }
-
-    record GradientMap(int meanRGB) implements ColorampParameters {
-        @Override
-        public int getMeanRGB() {
-            return meanRGB;
-        }
-    }
-
-    int getMeanRGB();
+    Iterable<UUID> getOtherPlayersInTeam(UUID playerUuid);
 }

@@ -21,28 +21,24 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package aztech.modern_industrialization.textures.coloramp;
+package aztech.modern_industrialization.mixin.runtime_resources;
 
-import aztech.modern_industrialization.textures.TextureHelper;
+import aztech.modern_industrialization.MIConfig;
+import aztech.modern_industrialization.misc.runtime_datagen.RuntimeResourcesHelper;
+import com.google.common.collect.ImmutableList;
+import net.minecraft.core.RegistryAccess;
+import net.minecraft.server.MinecraftServer;
+import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.injection.At;
+import org.spongepowered.asm.mixin.injection.Inject;
+import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
-public class DefaultColoramp implements Coloramp {
-
-    public final int rgb;
-
-    public DefaultColoramp(int rgb) {
-        this.rgb = rgb;
-    }
-
-    @Override
-    public int getRGB(double luminance) {
-        int r = TextureHelper.getRrgb(rgb);
-        int g = TextureHelper.getGrgb(rgb);
-        int b = TextureHelper.getBrgb(rgb);
-        return TextureHelper.toRGB((int) (r * luminance), (int) (g * luminance), (int) (b * luminance));
-    }
-
-    @Override
-    public int getMeanRGB() {
-        return rgb;
+@Mixin(MinecraftServer.class)
+public class MinecraftServerMixin {
+    @Inject(at = @At("HEAD"), method = "method_29437")
+    private void injectReloadResources(RegistryAccess.Frozen frozen, ImmutableList<?> list, CallbackInfoReturnable<?> cir) {
+        if (MIConfig.getConfig().loadRuntimeGeneratedResources) {
+            RuntimeResourcesHelper.IS_CREATING_SERVER_RELOAD_PACK.set(Boolean.TRUE);
+        }
     }
 }

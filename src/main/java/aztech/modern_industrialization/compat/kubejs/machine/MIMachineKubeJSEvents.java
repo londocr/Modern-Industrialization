@@ -34,4 +34,5 @@ public interface MIMachineKubeJSEvents {
     EventHandler REGISTER_CASINGS = EVENT_GROUP.startup("registerCasings", () -> RegisterCasingsEventJS.class);
     EventHandler REGISTER_MACHINES = EVENT_GROUP.startup("registerMachines", () -> RegisterMachinesEventJS.class);
     EventHandler ADD_MULTIBLOCK_SLOTS = EVENT_GROUP.startup("addMultiblockSlots", () -> AddMultiblockSlotsEventJS.class).extra(Extra.REQUIRES_STRING);
+    EventHandler ADD_EBF_TIERS = EVENT_GROUP.startup("addEbfTiers", () -> AddEbfTiersEventJS.class);
 }

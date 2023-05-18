@@ -169,6 +169,10 @@ public class MITooltips {
         return state.getBlock().getName().withStyle(NUMBER_TEXT);
     };
 
+    public static final Parser<Item> ITEM_PARSER = state -> {
+        return state.getDefaultInstance().getHoverName().copy().withStyle(NUMBER_TEXT);
+    };
+
     // Tooltips
 
     public static final TooltipAttachment CABLES = TooltipAttachment
@@ -178,9 +182,11 @@ public class MITooltips {
             });
 
     public static final TooltipAttachment COILS = TooltipAttachment.of(
-            (item) -> item instanceof BlockItem blockItem && ElectricBlastFurnaceBlockEntity.coilsMaxBaseEU.containsKey(blockItem.getBlock()),
+            (item) -> item instanceof BlockItem blockItem
+                    && ElectricBlastFurnaceBlockEntity.tiersByCoil.containsKey(Registry.BLOCK.getKey(blockItem.getBlock())),
             (itemStack) -> {
-                long eu = ElectricBlastFurnaceBlockEntity.coilsMaxBaseEU.get(((BlockItem) itemStack.getItem()).getBlock());
+                long eu = ElectricBlastFurnaceBlockEntity.tiersByCoil.get(Registry.BLOCK.getKey(((BlockItem) itemStack.getItem()).getBlock()))
+                        .maxBaseEu();
                 return new Line(MIText.EbfMaxEu).arg(eu).build();
             });
 

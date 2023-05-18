@@ -37,6 +37,7 @@ ServerEvents.recipes(event => {
 The easiest way to add process conditions is via KubeJS, similarly to how inputs and outputs are added.
 Here is the list of currently supported conditions:
 - `dimension(dimension key)`: Requires the machine to be in the specified dimension.
+- `biome(biome key)`: Requires the machine to be in the specified biome.
 - `adjacentBlock(block, position)`: Requires a specific block to be next to the machine.
   - Position indicates where the block should be.
   - For multiblocks, the position is always relative to the controller.
@@ -80,10 +81,10 @@ Here is an example to add a fluid output slot to all 3 blast furnace categories:
 MIMachineEvents.addMultiblockSlots("steam_blast_furnace", event => {
     event.fluidOutputs.addSlot(122, 53);
 })
-MIMachineEvents.addMultiblockSlots("electric_blast_furnace_0", event => {
+MIMachineEvents.addMultiblockSlots("electric_blast_furnace_cupronickel_coil", event => {
     event.fluidOutputs.addSlot(122, 53);
 })
-MIMachineEvents.addMultiblockSlots("electric_blast_furnace_1", event => {
+MIMachineEvents.addMultiblockSlots("electric_blast_furnace_kanthal_coil", event => {
     event.fluidOutputs.addSlot(122, 53);
 })
 ```

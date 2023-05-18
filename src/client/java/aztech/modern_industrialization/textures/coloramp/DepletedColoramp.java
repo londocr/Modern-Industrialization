@@ -24,28 +24,29 @@
 package aztech.modern_industrialization.textures.coloramp;
 
 import aztech.modern_industrialization.textures.TextureHelper;
-import java.util.function.Function;
+import java.awt.*;
 
-public class MixedColoramp implements Coloramp {
+public class DepletedColoramp implements IColoramp {
 
-    private final Coloramp coloramp1, coloramp2;
-    private final Function<Double, Double> mixer;
-    private final double meanMix;
+    private final IColoramp coloramp;
 
-    public MixedColoramp(Coloramp coloramp1, Coloramp coloramp2, Function<Double, Double> mixer, double meanMix) {
-        this.coloramp1 = coloramp1;
-        this.coloramp2 = coloramp2;
-        this.mixer = mixer;
-        this.meanMix = meanMix;
+    public DepletedColoramp(IColoramp coloramp) {
+        this.coloramp = coloramp;
     }
 
     @Override
     public int getRGB(double luminance) {
-        return TextureHelper.mixRGB(coloramp1.getRGB(luminance), coloramp2.getRGB(luminance), mixer.apply(luminance));
+        float[] hsbval = new float[3];
+        int rgb = coloramp.getRGB(luminance);
+        Color.RGBtoHSB(TextureHelper.getRrgb(rgb), TextureHelper.getGrgb(rgb), TextureHelper.getBrgb(rgb), hsbval);
+        return 0xFFFFFF & Color.HSBtoRGB(hsbval[0], 0.2f * hsbval[0], 0.5f * hsbval[2]);
     }
 
     @Override
     public int getMeanRGB() {
-        return TextureHelper.mixRGB(coloramp1.getMeanRGB(), coloramp2.getMeanRGB(), meanMix);
+        float[] hsbval = new float[3];
+        int rgb = coloramp.getMeanRGB();
+        Color.RGBtoHSB(TextureHelper.getRrgb(rgb), TextureHelper.getGrgb(rgb), TextureHelper.getBrgb(rgb), hsbval);
+        return 0xFFFFFF & Color.HSBtoRGB(hsbval[0], 0.2f * hsbval[0], 0.5f * hsbval[2]);
     }
 }

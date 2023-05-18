@@ -23,23 +23,25 @@
  */
 package aztech.modern_industrialization.stats;
 
+import aztech.modern_industrialization.util.MISavedData;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
 import java.util.UUID;
+import java.util.function.Function;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.level.saveddata.SavedData;
 
-public class PlayerStatisticsData extends SavedData {
+public class PlayerStatisticsData extends MISavedData {
     private final Map<UUID, PlayerStatistics> stats = new HashMap<>();
+    private final Function<UUID, PlayerStatistics> statsFactory = uuid -> new PlayerStatistics(this, uuid);
 
     private PlayerStatisticsData(CompoundTag tag) {
         for (var key : tag.getAllKeys()) {
             var uuid = UUID.fromString(key);
-            stats.put(uuid, new PlayerStatistics(uuid, tag.getCompound(key)));
+            stats.put(uuid, new PlayerStatistics(this, uuid, tag.getCompound(key)));
         }
     }
 
@@ -48,7 +50,7 @@ public class PlayerStatisticsData extends SavedData {
 
     public PlayerStatistics get(UUID uuid) {
         Objects.requireNonNull(uuid);
-        return stats.computeIfAbsent(uuid, PlayerStatistics::new);
+        return stats.computeIfAbsent(uuid, statsFactory);
     }
 
     public PlayerStatistics get(Player player) {
