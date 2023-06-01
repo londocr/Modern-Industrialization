@@ -23,6 +23,7 @@
  */
 package aztech.modern_industrialization.compat.waila.server;
 
+import aztech.modern_industrialization.machines.MachineBlockEntity;
 import aztech.modern_industrialization.pipes.impl.PipeBlockEntity;
 import mcp.mobius.waila.api.IRegistrar;
 import mcp.mobius.waila.api.IWailaPlugin;
@@ -31,5 +32,6 @@ public class MIWailaServerPlugin implements IWailaPlugin {
     @Override
     public void register(IRegistrar r) {
         r.addBlockData(new PipeDataProvider(), PipeBlockEntity.class);
+        r.addBlockData(new OverclockComponentProvider(), MachineBlockEntity.class);
     }
 }

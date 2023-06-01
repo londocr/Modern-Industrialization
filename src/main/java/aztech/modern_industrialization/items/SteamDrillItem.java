@@ -178,17 +178,17 @@ public class SteamDrillItem
 
     @Override
     public boolean mineBlock(ItemStack stack, Level world, BlockState state, BlockPos pos, LivingEntity miner) {
-        useFuel(stack);
+        useFuel(stack, miner);
         return true;
     }
 
     @Override
     public boolean hurtEnemy(ItemStack stack, LivingEntity target, LivingEntity attacker) {
-        useFuel(stack);
+        useFuel(stack, attacker);
         return true;
     }
 
-    private void useFuel(ItemStack stack) {
+    private void useFuel(ItemStack stack, @Nullable LivingEntity entity) {
         CompoundTag tag = stack.getTag();
         if (tag != null && tag.getInt("water") > 0) {
             if (tag.getInt("burnTicks") == 0) {
@@ -196,6 +196,12 @@ public class SteamDrillItem
                 tag = stack.getOrCreateTag(); // consumeFuel might cause the tag to change
                 tag.putInt("burnTicks", burnTicks);
                 tag.putInt("maxBurnTicks", burnTicks);
+
+                if (burnTicks > 0 && entity != null) {
+                    // Play cool sound
+                    entity.level.playSound(null, entity.getX(), entity.getY(), entity.getZ(), SoundEvents.FIRE_AMBIENT, SoundSource.PLAYERS, 1.0f,
+                            1.0f);
+                }
             }
         }
     }
@@ -245,6 +251,16 @@ public class SteamDrillItem
         }
         if (tag.getInt("burnTicks") == 0) {
             tag.remove("maxBurnTicks");
+        }
+        if (tag.getInt("water") == 0) {
+            if (entity instanceof Player player) {
+                var inv = player.getInventory();
+                for (int i = 0; i < inv.getContainerSize(); ++i) {
+                    if (tryFillWater(player, stack, inv.getItem(i))) {
+                        break;
+                    }
+                }
+            }
         }
     }
 
@@ -314,7 +330,16 @@ public class SteamDrillItem
     @Override
     public boolean handleClick(Player player, ItemStack barrelLike, Mutable<ItemStack> otherStack) {
         // Try to refill water first if it's contained in the other stack
-        var otherStorage = ContainerItemContext.withInitial(otherStack.getValue()).find(FluidStorage.ITEM);
+        if (tryFillWater(player, barrelLike, otherStack.getValue())) {
+            return true;
+        }
+
+        return ItemContainingItemHelper.super.handleClick(player, barrelLike, otherStack);
+    }
+
+    private boolean tryFillWater(Player player, ItemStack barrelLike, ItemStack fillSource) {
+        var otherStorage = ContainerItemContext.withInitial(fillSource).find(FluidStorage.ITEM);
+
         if (otherStorage != null) {
             long totalWater = 0;
             for (var view : otherStorage) {
@@ -323,13 +348,13 @@ public class SteamDrillItem
                 }
             }
 
-            if (totalWater * otherStack.getValue().getCount() >= FluidConstants.BUCKET) {
+            if (totalWater * fillSource.getCount() >= FluidConstants.BUCKET) {
                 fillWater(player, barrelLike);
                 return true;
             }
         }
 
-        return ItemContainingItemHelper.super.handleClick(player, barrelLike, otherStack);
+        return false;
     }
 
     @Override

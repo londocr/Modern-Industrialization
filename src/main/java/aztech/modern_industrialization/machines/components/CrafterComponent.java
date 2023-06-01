@@ -349,7 +349,7 @@ public class CrafterComponent implements IComponent.ServerOnly {
         }
     }
 
-    private static double getEfficiencyOverclock(int efficiencyTicks) {
+    public static double getEfficiencyOverclock(int efficiencyTicks) {
         return Math.pow(2.0, efficiencyTicks / 32.0);
     }
 
@@ -483,10 +483,10 @@ public class CrafterComponent implements IComponent.ServerOnly {
                     stackId++;
                     ItemVariant key = stack.getResource();
                     if (key.getItem() == output.item || key.isBlank()) {
-                        // If simulating, respect the adjusted capacity.
+                        // If simulating or chanced output, respect the adjusted capacity.
                         // If putting the output, don't respect the adjusted capacity in case it was
                         // reduced during the processing.
-                        int remainingCapacity = simulate ? (int) stack.getRemainingCapacityFor(ItemVariant.of(output.item))
+                        int remainingCapacity = simulate || output.probability < 1 ? (int) stack.getRemainingCapacityFor(ItemVariant.of(output.item))
                                 : output.item.getMaxStackSize() - (int) stack.getAmount();
                         int ins = Math.min(remainingAmount, remainingCapacity);
                         if (key.isBlank()) {
@@ -657,6 +657,20 @@ public class CrafterComponent implements IComponent.ServerOnly {
                     continue outer;
             }
             AbstractConfigurableStack.playerLockNoOverride(output.fluid, this.inventory.getFluidOutputs());
+        }
+
+        // LOCK ITEMS
+        if (recipe.itemInputs.size() > 0 || recipe.itemOutputs.size() > 0) {
+            lockAll(this.inventory.getItemInputs());
+            lockAll(this.inventory.getItemOutputs());
+        }
+    }
+
+    private static void lockAll(List<? extends AbstractConfigurableStack<?, ?>> stacks) {
+        for (var stack : stacks) {
+            if (stack.isEmpty() && stack.getLockedInstance() == null) {
+                stack.togglePlayerLock();
+            }
         }
     }
 }

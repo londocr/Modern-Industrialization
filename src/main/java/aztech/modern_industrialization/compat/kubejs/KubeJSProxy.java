@@ -25,6 +25,7 @@ package aztech.modern_industrialization.compat.kubejs;
 
 import aztech.modern_industrialization.inventory.SlotPositions;
 import aztech.modern_industrialization.machines.blockentities.multiblocks.ElectricBlastFurnaceBlockEntity;
+import aztech.modern_industrialization.materials.MaterialBuilder;
 import java.util.function.Consumer;
 
 public class KubeJSProxy {
@@ -33,7 +34,13 @@ public class KubeJSProxy {
     public void fireAddMaterialsEvent() {
     }
 
+    public void fireModifyMaterialEvent(MaterialBuilder materialBuilder) {
+    }
+
     public void fireRegisterFluidsEvent() {
+    }
+
+    public void fireRegisterFluidFuelsEvent() {
     }
 
     public void fireRegisterRecipeTypesEvent() {
@@ -45,10 +52,16 @@ public class KubeJSProxy {
     public void fireRegisterMachinesEvent() {
     }
 
+    public void fireRegisterUpgradesEvent() {
+    }
+
     public void fireAddMultiblockSlotsEvent(String category, SlotPositions.Builder itemInputs, SlotPositions.Builder itemOutputs,
             SlotPositions.Builder fluidInputs, SlotPositions.Builder fluidOutputs) {
     }
 
     public void fireAddEbfTiersEvent(Consumer<ElectricBlastFurnaceBlockEntity.Tier> tierConsumer) {
+    }
+
+    public void fireCustomConditionEvent() {
     }
 }
